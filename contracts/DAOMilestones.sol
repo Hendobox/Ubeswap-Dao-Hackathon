@@ -23,6 +23,7 @@ struct Project {
     bool hasStarted;
     bool isRevoked;
     address payable beneficiary;
+    bytes document;
     Milestone[] milestones;
     uint256 totalAmount;
     uint256 totalPayout;
@@ -57,7 +58,8 @@ contract DAOMilestones is Ownable {
 
     function setProject(
         address payable beneficiary,
-        Milestone[] memory milestones
+        Milestone[] memory milestones,
+        bytes memory document
     ) external onlyOwner {
         uint256 length = milestones.length;
         // get earliest realease time
@@ -66,6 +68,7 @@ contract DAOMilestones is Ownable {
 
         Project storage p = _projects[id];
         p.beneficiary = beneficiary;
+        p.document = document;
 
         for (uint256 i = 0; i < length; i++) {
             Milestone memory m = milestones[i];
