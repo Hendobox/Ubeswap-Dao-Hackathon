@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./UbeDAONFT.sol";
 
 error INVALID_AMOUNT_PASSED();
 error INVALID_TIMESTAMP_PASSED();
@@ -22,14 +23,13 @@ struct Milestone {
 struct Project {
     bool hasStarted;
     bool isRevoked;
-    address payable beneficiary;
     bytes document;
     Milestone[] milestones;
     uint256 totalAmount;
     uint256 totalPayout;
 }
 
-contract DAOMilestones is Ownable {
+contract DAOMilestones is UbeDAONFT, Ownable {
     Project[] private _projects;
 
     event Initialized(uint256 indexed id, Project project);
@@ -37,7 +37,11 @@ contract DAOMilestones is Ownable {
     event Revoke(uint256 indexed id, address indexed to);
     event Resolve(uint256 indexed idP, uint256 indexed idM, bool approve);
 
-    constructor(address daoAgent) Ownable() {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address daoAgent
+    ) UbeDAONFT(name_, symbol_) Ownable() {
         transferOwnership(daoAgent);
     }
 
@@ -64,10 +68,9 @@ contract DAOMilestones is Ownable {
         uint256 length = milestones.length;
         // get earliest realease time
         uint256 time = milestones[0].timestamp;
-        uint256 id = _projects.length;
+        uint256 id = _projects.length + 1;
 
         Project storage p = _projects[id];
-        p.beneficiary = beneficiary;
         p.document = document;
 
         for (uint256 i = 0; i < length; i++) {
@@ -80,6 +83,8 @@ contract DAOMilestones is Ownable {
                 p.totalAmount += m.amount;
             }
         }
+
+        _mint(beneficiary, id);
         emit Initialized(id, p);
     }
 
@@ -104,7 +109,7 @@ contract DAOMilestones is Ownable {
         uint256 idP,
         uint256 idM,
         bool approve,
-        address payable to
+        address payable daoWallet
     ) external onlyOwner whenStarted(idP) whenNotRevoked(idP) {
         Project storage _p = _projects[idP];
         Project memory p = _projects[idP];
@@ -122,16 +127,19 @@ contract DAOMilestones is Ownable {
             if (time < m.timestamp) revert MILESTONE_NOT_REACHED();
             _m.approved = true;
             _p.totalPayout += m.amount;
-            (bool success, ) = p.beneficiary.call{value: m.amount}("");
+            address to = ownerOf(idP);
+            require(to != address(0), "NULL_ADDRESS");
+            (bool success, ) = payable(to).call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
         } else {
-            (bool success, ) = to.call{value: m.amount}("");
+            require(daoWallet != address(0), "NULL_ADDRESS");
+            (bool success, ) = daoWallet.call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
         }
         emit Resolve(idP, idM, approve);
     }
 
-    function revokeProject(uint256 id, address payable to)
+    function revokeProject(uint256 id, address payable daoWallet)
         external
         onlyOwner
         whenStarted(id)
@@ -144,10 +152,10 @@ contract DAOMilestones is Ownable {
 
         if (p.hasStarted) {
             uint256 val = p.totalAmount - p.totalPayout;
-            (bool success, ) = to.call{value: val}("");
+            (bool success, ) = daoWallet.call{value: val}("");
             require(success);
         }
-        emit Revoke(id, to);
+        emit Revoke(id, daoWallet);
     }
 
     function getProjects() external view returns (Project[] memory) {
