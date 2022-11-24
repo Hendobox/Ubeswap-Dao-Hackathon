@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "./UbeDAONFT.sol";
 
 error INVALID_AMOUNT_PASSED();
@@ -23,14 +24,16 @@ struct Milestone {
 struct Project {
     bool hasStarted;
     bool isRevoked;
-    bytes document;
     Milestone[] milestones;
     uint256 totalAmount;
     uint256 totalPayout;
 }
 
 contract DAOMilestones is UbeDAONFT, Ownable {
-    Project[] private _projects;
+    using Counters for Counters.Counter;
+
+    Counters.Counter public count;
+    mapping(uint256 => Project) private _projects;
 
     event Initialized(uint256 indexed id, Project project);
     event Deposit(uint256 indexed id, uint256 amount);
@@ -63,15 +66,15 @@ contract DAOMilestones is UbeDAONFT, Ownable {
     function setProject(
         address payable beneficiary,
         Milestone[] memory milestones,
-        bytes memory document
+        string memory uri
     ) external onlyOwner {
         uint256 length = milestones.length;
         // get earliest realease time
         uint256 time = milestones[0].timestamp;
-        uint256 id = _projects.length + 1;
+        count.increment();
+        uint256 id = count.current();
 
         Project storage p = _projects[id];
-        p.document = document;
 
         for (uint256 i = 0; i < length; i++) {
             Milestone memory m = milestones[i];
@@ -85,16 +88,11 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         }
 
         _mint(beneficiary, id);
+        _setTokenURI(id, uri);
         emit Initialized(id, p);
     }
 
-    function deposit(uint256 id)
-        external
-        payable
-        onlyOwner
-        whenNotStarted(id)
-        whenNotRevoked(id)
-    {
+    function deposit(uint256 id) external payable onlyOwner whenNotStarted(id) {
         Project storage _p = _projects[id];
         Project memory p = _projects[id];
         uint256 total = p.totalAmount;
@@ -158,12 +156,8 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         emit Revoke(id, daoWallet);
     }
 
-    function getProjects() external view returns (Project[] memory) {
-        return _projects;
-    }
-
     function getProject(uint256 id) external view returns (Project memory) {
-        uint256 length = _projects.length;
+        uint256 length = count.current();
 
         if (length < id) revert INVALID_ID();
         return _projects[id];
