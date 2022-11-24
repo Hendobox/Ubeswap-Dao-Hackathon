@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "./UbeDAONFT.sol";
 
 error INVALID_AMOUNT_PASSED();
@@ -23,14 +24,17 @@ struct Milestone {
 struct Project {
     bool hasStarted;
     bool isRevoked;
-    bytes document;
     Milestone[] milestones;
     uint256 totalAmount;
     uint256 totalPayout;
+    uint256 totalMissout;
 }
 
 contract DAOMilestones is UbeDAONFT, Ownable {
-    Project[] private _projects;
+    using Counters for Counters.Counter;
+
+    Counters.Counter public count;
+    mapping(uint256 => Project) private _projects;
 
     event Initialized(uint256 indexed id, Project project);
     event Deposit(uint256 indexed id, uint256 amount);
@@ -63,15 +67,15 @@ contract DAOMilestones is UbeDAONFT, Ownable {
     function setProject(
         address payable beneficiary,
         Milestone[] memory milestones,
-        bytes memory document
+        string memory uri
     ) external onlyOwner {
         uint256 length = milestones.length;
         // get earliest realease time
         uint256 time = milestones[0].timestamp;
-        uint256 id = _projects.length + 1;
+        count.increment();
+        uint256 id = count.current();
 
         Project storage p = _projects[id];
-        p.document = document;
 
         for (uint256 i = 0; i < length; i++) {
             Milestone memory m = milestones[i];
@@ -85,16 +89,11 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         }
 
         _mint(beneficiary, id);
+        _setTokenURI(id, uri);
         emit Initialized(id, p);
     }
 
-    function deposit(uint256 id)
-        external
-        payable
-        onlyOwner
-        whenNotStarted(id)
-        whenNotRevoked(id)
-    {
+    function deposit(uint256 id) external payable onlyOwner whenNotStarted(id) {
         Project storage _p = _projects[id];
         Project memory p = _projects[id];
         uint256 total = p.totalAmount;
@@ -119,7 +118,7 @@ contract DAOMilestones is UbeDAONFT, Ownable {
 
         uint256 time = block.timestamp;
 
-        if (!m.closed) revert MILESTONE_ALREADY_CLOSE();
+        if (m.closed) revert MILESTONE_ALREADY_CLOSE();
 
         _m.closed = true;
 
@@ -128,10 +127,15 @@ contract DAOMilestones is UbeDAONFT, Ownable {
             _m.approved = true;
             _p.totalPayout += m.amount;
             address to = ownerOf(idP);
+
+            // sanity check
             require(to != address(0), "NULL_ADDRESS");
+
+            // send celo
             (bool success, ) = payable(to).call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
         } else {
+            _p.totalMissout += m.amount;
             require(daoWallet != address(0), "NULL_ADDRESS");
             (bool success, ) = daoWallet.call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
@@ -151,19 +155,17 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         _p.isRevoked = true;
 
         if (p.hasStarted) {
-            uint256 val = p.totalAmount - p.totalPayout;
+            require(daoWallet != address(0), "NULL_ADDRESS");
+            uint256 val = p.totalAmount - (p.totalPayout + _p.totalMissout);
+            _p.totalMissout += val;
             (bool success, ) = daoWallet.call{value: val}("");
             require(success);
         }
         emit Revoke(id, daoWallet);
     }
 
-    function getProjects() external view returns (Project[] memory) {
-        return _projects;
-    }
-
     function getProject(uint256 id) external view returns (Project memory) {
-        uint256 length = _projects.length;
+        uint256 length = count.current();
 
         if (length < id) revert INVALID_ID();
         return _projects[id];
@@ -181,6 +183,6 @@ contract DAOMilestones is UbeDAONFT, Ownable {
 
     function _whenNotRevoked(uint256 id) private view {
         bool isSet = _projects[id].isRevoked;
-        if (!isSet) revert MILESTONE_ALREADY_REVOKED();
+        if (isSet) revert MILESTONE_ALREADY_REVOKED();
     }
 }
