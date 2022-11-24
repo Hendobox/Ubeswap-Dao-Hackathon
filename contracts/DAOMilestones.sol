@@ -27,6 +27,7 @@ struct Project {
     Milestone[] milestones;
     uint256 totalAmount;
     uint256 totalPayout;
+    uint256 totalMissout;
 }
 
 contract DAOMilestones is UbeDAONFT, Ownable {
@@ -117,7 +118,7 @@ contract DAOMilestones is UbeDAONFT, Ownable {
 
         uint256 time = block.timestamp;
 
-        if (!m.closed) revert MILESTONE_ALREADY_CLOSE();
+        if (m.closed) revert MILESTONE_ALREADY_CLOSE();
 
         _m.closed = true;
 
@@ -126,10 +127,15 @@ contract DAOMilestones is UbeDAONFT, Ownable {
             _m.approved = true;
             _p.totalPayout += m.amount;
             address to = ownerOf(idP);
+
+            // sanity check
             require(to != address(0), "NULL_ADDRESS");
+
+            // send celo
             (bool success, ) = payable(to).call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
         } else {
+            _p.totalMissout += m.amount;
             require(daoWallet != address(0), "NULL_ADDRESS");
             (bool success, ) = daoWallet.call{value: m.amount}("");
             require(success, "FAILED_TO_TRANSFER_FUNDS");
@@ -149,7 +155,9 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         _p.isRevoked = true;
 
         if (p.hasStarted) {
-            uint256 val = p.totalAmount - p.totalPayout;
+            require(daoWallet != address(0), "NULL_ADDRESS");
+            uint256 val = p.totalAmount - (p.totalPayout + _p.totalMissout);
+            _p.totalMissout += val;
             (bool success, ) = daoWallet.call{value: val}("");
             require(success);
         }
@@ -175,6 +183,6 @@ contract DAOMilestones is UbeDAONFT, Ownable {
 
     function _whenNotRevoked(uint256 id) private view {
         bool isSet = _projects[id].isRevoked;
-        if (!isSet) revert MILESTONE_ALREADY_REVOKED();
+        if (isSet) revert MILESTONE_ALREADY_REVOKED();
     }
 }
