@@ -19,8 +19,6 @@ describe('DAO Milestones ', function () {
 
     const DAOMilestones = await ethers.getContractFactory('DAOMilestones');
     const contract_ = await DAOMilestones.deploy(
-      'UBE NFT',
-      'UBENFT',
       owner_.address
     );
     const addr0_ = '0x0000000000000000000000000000000000000000';
