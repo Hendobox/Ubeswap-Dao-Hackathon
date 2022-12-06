@@ -1,39 +1,50 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
 import { ChakraProvider, Container } from "@chakra-ui/react";
+import React from "react";
+import {
+  configureChains,
+  createClient,
+  defaultChains,
+  WagmiConfig,
+} from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import "./App.css";
 import { ChakraTheme as theme } from "./utils/chakra-themes";
-import { ReactComponent as UbeLogo } from "./assets/logo.svg";
 import { ViewProjects } from "./views/projects";
 
-function App() {
-  const [count, setCount] = useState(0);
+const { provider, chains } = configureChains(defaultChains, [
+  alchemyProvider({ apiKey: "Hn0NhmSTQ5iy7VIWbmlo50i8TaLbVjFw" }),
+]);
 
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors: [
+    new InjectedConnector({ chains }),
+    new MetaMaskConnector({ chains }),
+    new WalletConnectConnector({ chains, options: { qrcode: true } }),
+  ],
+  provider,
+});
+
+// const ethereumClient = new EthereumClient(wagmiClient, defaultChains);
+
+function App() {
   return (
-    <ChakraProvider theme={theme}>
-      <Container>
-        <ViewProjects />
-      </Container>
-      {/* <div className="App">
-        <div>
-          <a href="https://app.ubeswap.org/" target="_blank">
-            <UbeLogo height={36} width={36} />
-          </a>
-        </div>
-        <h1>Vite + React</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test HMR
-          </p>
-        </div>
-        <p className="read-the-docs">
-          Click on the Vite and React logos to learn more
-        </p>
-      </div> */}
-    </ChakraProvider>
+    <React.Fragment>
+      <WagmiConfig client={wagmiClient}>
+        <ChakraProvider theme={theme}>
+          <Container>
+            <ViewProjects />
+          </Container>
+        </ChakraProvider>
+      </WagmiConfig>
+      {/* <Web3Modal
+        projectId="<YOUR_PROJECT_ID>"
+        ethereumClient={ethereumClient}
+      /> */}
+    </React.Fragment>
   );
 }
 

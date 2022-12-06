@@ -1,10 +1,24 @@
-import { Box, Center, Container, Heading, Link } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Heading,
+  Link,
+} from "@chakra-ui/react";
+import { useMemo } from "react";
+import { useAccount, useConnect } from "wagmi";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ReactComponent as UbeLogo } from "../assets/logo.svg";
 import { ProjectsTable } from "../components/table";
 import { Project, Projects } from "../utils/projects";
 
 export const ViewProjects = () => {
+  const { connector, address } = useAccount();
+  const { connect, connectors } = useConnect({
+    connector: new MetaMaskConnector(),
+  });
   const columns = useMemo(
     () => [
       {
@@ -27,13 +41,23 @@ export const ViewProjects = () => {
     []
   );
   const projects = Projects;
+  console.log({ connectors, address });
   return (
     <Container minH="100vh">
-      <Center>
-        <Link href="https://app.ubeswap.org/" target="_blank">
-          <UbeLogo height={36} width={36} />
-        </Link>
-      </Center>
+      <Flex alignItems="center" justifyContent="space-between">
+        <Center>
+          <Link href="https://app.ubeswap.org/" target="_blank">
+            <UbeLogo height={36} width={36} />
+          </Link>
+        </Center>
+
+        <Button
+          onClick={() => connect({ connector })}
+          // disabled={!connector?.ready}
+        >
+          Connect Wallet
+        </Button>
+      </Flex>
 
       <Center mt={4}>
         <Heading>UBE DAO Projects Funding</Heading>
