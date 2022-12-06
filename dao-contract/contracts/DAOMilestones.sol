@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "./UbeDAONFT.sol";
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/utils/Counters.sol';
+import './UbeDAONFT.sol';
 
 error INVALID_AMOUNT_PASSED();
 error INVALID_TIMESTAMP_PASSED();
@@ -41,11 +41,10 @@ contract DAOMilestones is UbeDAONFT, Ownable {
     event Revoke(uint256 indexed id, address indexed to);
     event Resolve(uint256 indexed idP, uint256 indexed idM, bool approve);
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address daoAgent
-    ) UbeDAONFT(name_, symbol_) Ownable() {
+    constructor(address daoAgent)
+        UbeDAONFT('Ube DAO Milestones', 'UBE-NFT')
+        Ownable()
+    {
         transferOwnership(daoAgent);
     }
 
@@ -129,16 +128,16 @@ contract DAOMilestones is UbeDAONFT, Ownable {
             address to = ownerOf(idP);
 
             // sanity check
-            require(to != address(0), "NULL_ADDRESS");
+            require(to != address(0), 'NULL_ADDRESS');
 
             // send celo
-            (bool success, ) = payable(to).call{value: m.amount}("");
-            require(success, "FAILED_TO_TRANSFER_FUNDS");
+            (bool success, ) = payable(to).call{value: m.amount}('');
+            require(success, 'FAILED_TO_TRANSFER_FUNDS');
         } else {
             _p.totalMissout += m.amount;
-            require(daoWallet != address(0), "NULL_ADDRESS");
-            (bool success, ) = daoWallet.call{value: m.amount}("");
-            require(success, "FAILED_TO_TRANSFER_FUNDS");
+            require(daoWallet != address(0), 'NULL_ADDRESS');
+            (bool success, ) = daoWallet.call{value: m.amount}('');
+            require(success, 'FAILED_TO_TRANSFER_FUNDS');
         }
         emit Resolve(idP, idM, approve);
     }
@@ -155,10 +154,10 @@ contract DAOMilestones is UbeDAONFT, Ownable {
         _p.isRevoked = true;
 
         if (p.hasStarted) {
-            require(daoWallet != address(0), "NULL_ADDRESS");
+            require(daoWallet != address(0), 'NULL_ADDRESS');
             uint256 val = p.totalAmount - (p.totalPayout + _p.totalMissout);
             _p.totalMissout += val;
-            (bool success, ) = daoWallet.call{value: val}("");
+            (bool success, ) = daoWallet.call{value: val}('');
             require(success);
         }
         emit Revoke(id, daoWallet);
