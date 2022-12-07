@@ -7,17 +7,25 @@ import {
   Heading,
   Link,
 } from "@chakra-ui/react";
-import { useMemo } from "react";
-import { useAccount, useConnect } from "wagmi";
+import { useCallback, useMemo } from "react";
+import { useAccount, useConnect, useContractRead, useProvider } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import ABI from "../assets/contract-abi.json";
 import { ReactComponent as UbeLogo } from "../assets/logo.svg";
 import { ProjectsTable } from "../components/table";
+import { CONTRACT_ADDRESS } from "../utils/constants";
 import { Project, Projects } from "../utils/projects";
 
 export const ViewProjects = () => {
+  const provider = useProvider();
   const { connector, address } = useAccount();
-  const { connect, connectors } = useConnect({
+  const { connect } = useConnect({
     connector: new MetaMaskConnector(),
+  });
+  const { data } = useContractRead({
+    address: CONTRACT_ADDRESS,
+    abi: ABI.abi,
+    functionName: "owner",
   });
   const columns = useMemo(
     () => [
@@ -41,7 +49,17 @@ export const ViewProjects = () => {
     []
   );
   const projects = Projects;
-  console.log({ connectors, address });
+  const getContractData = useCallback(async () => {
+    const count = await provider.getCode(
+      "0x3Cd3D3E524d366Ffe6e5e7740F5A7162E970BBb6"
+    );
+    console.log({ count });
+  }, []);
+  console.log({
+    count: data,
+    codeExists: getContractData(),
+    address,
+  });
   return (
     <Container minH="100vh">
       <Flex alignItems="center" justifyContent="space-between">
