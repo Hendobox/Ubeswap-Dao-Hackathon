@@ -1,10 +1,11 @@
 import fs from 'fs';
 import express from 'express';
 import { create } from 'ipfs-http-client'
-const router: any = express.Router();
 import Joi from 'joi';
 import dotenv  from "dotenv";
 dotenv.config()
+
+const router: any = express.Router();
 
 const daoInfo = {
   milestoneContract: "0x0000000000000000000000000000000000000000",
@@ -98,7 +99,7 @@ A “Foreign Bank” means an organization that (i) is organized under the laws 
 
   fs.writeFileSync("./uploads/file.txt", content.trim());
 
-  const readable = fs.readFileSync("./uploads/file.txt", "utf-8");
+  // const readable = fs.readFileSync("./uploads/file.txt", "utf-8");
 
   // const client = create({
   //   host: 'ipfs.infura.io',
