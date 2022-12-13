@@ -273,12 +273,22 @@ export const CreateProjectView = () => {
                         .writeText(JSON.stringify(projectData))
                         .then(() => {
                           setCopied(true);
-                          setTimeout(() => setCopied(false), 2000);
+                          setTimeout(() => setCopied(false), 3500);
                         });
                     }}
                     mt="5"
                   >
                     Copy Multisig Transaction Params
+                    {copied ? (
+                      <Text
+                        ml="1"
+                        color="green"
+                        fontWeight="bold"
+                        fontStyle="italic"
+                      >
+                        Copied
+                      </Text>
+                    ) : null}
                   </Button>
                 ) : (
                   <Button flex="1" maxW="15em" mt="40px" type="submit">
