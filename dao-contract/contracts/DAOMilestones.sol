@@ -80,6 +80,12 @@ contract DAOMilestones is UbeDAONFT, Ownable {
             Milestone memory m = milestones[i];
             if (m.timestamp < time) revert INVALID_TIMESTAMP_PASSED();
             time = m.timestamp;
+
+            // We had to add these lines (86 and 87) because of the bug realized in
+            // Openzeppelin defender which is our administrator of choice
+            m.closed = false;
+            m.approved = false;
+
             p.milestones.push(m);
 
             unchecked {

@@ -138,4 +138,4 @@ npm run dev
 
 This will run the frontend on localhost **PORT 5173**.
 
-Here is a sample contract deployed on [Alfajores Network](https://alfajores.celoscan.io/address/0x022fa1f13F01735532881FFfDbb726f73fA9577D#code).
+Here is a sample contract deployed on [Alfajores Network](https://alfajores.celoscan.io/address/0x80131626584bF6A6Bd75Dc36aD09EC1BbfC50436#code).

@@ -4,3 +4,4 @@ typechain-types
 .env
 cache
 artifacts
+scripts/exec.ts
