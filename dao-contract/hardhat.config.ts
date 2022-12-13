@@ -1,8 +1,9 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+// import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-etherscan";
-import 'solidity-coverage';
-import dotenv  from "dotenv";
+import "hardhat-celo";
+// import 'solidity-coverage';
+import dotenv from "dotenv";
 dotenv.config();
 
 const config: HardhatUserConfig = {
@@ -10,18 +11,19 @@ const config: HardhatUserConfig = {
   networks: {
     mumbai: {
       url: process.env.MUMBAI_URL,
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.PRIVATE_KEY || ""],
     },
 
     alfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
-      accounts: [process.env.PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY || ""]
     }
   },
 
   etherscan: {
     apiKey: {
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+      alfajores: process.env.CELO_API_KEY as string,
     },
   },
 

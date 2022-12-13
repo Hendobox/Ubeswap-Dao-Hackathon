@@ -5,7 +5,7 @@ dotenv.config();
 async function main() {
 
   const DAOMilestones = await ethers.getContractFactory("DAOMilestones");
-  const dAOMilestones = await DAOMilestones.deploy(process.env.PUBLIC_KEY);
+  const dAOMilestones = await DAOMilestones.deploy(process.env.PUBLIC_KEY || "");
 
   await dAOMilestones.deployed();
 
