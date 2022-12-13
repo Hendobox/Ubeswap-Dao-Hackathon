@@ -120,7 +120,7 @@ export const ViewProjects = () => {
       </Button>
 
       <Box mt={4}>
-        <ProjectsTable columns={columns} data={projects} />
+        <ProjectsTable columns={columns} data={[]} />
       </Box>
     </Box>
   );

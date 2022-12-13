@@ -19,8 +19,6 @@ import { create } from "ipfs-http-client";
 import { useState } from "react";
 import * as Yup from "yup";
 import { DAOIPFSModel } from "../types";
-import dotenv from 'dotenv';
-dotenv.config();
 
 const ValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -61,8 +59,8 @@ export const CreateProjectView = () => {
     validationSchema: ValidationSchema,
     onSubmit: async (model) => {
       console.log({ model });
-      const projectId = process.env.INFURA_PROJECT_ID;
-      const projectSecret = process.env.INFURA_PROJECT_SECRET;
+      const projectId = "2Ifc0tuPeWAQfMiGkvRdt7ZMaEk";
+      const projectSecret = "476cd702f7d1173a081e64dda670c76a";
       const authorization =
         "Basic " +
         Buffer.from(projectId + ":" + projectSecret).toString("base64");
