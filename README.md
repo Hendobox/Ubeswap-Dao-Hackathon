@@ -96,9 +96,15 @@ This project comes with a contract, a test for that contract, a and deployment s
 - Solidity
 - Hardhat
 
-Next, you need to clone this repository and install the remaining dependencies by running the following in the project directory.
+### Backend
+
+Next, you need to clone this repository, enter the dao-contract folder, and install the remaining dependencies by running the following commands in the project directory.
 
 ```
+git clone https://github.com/Hendobox/Ubeswap-Dao-Hackathon.git
+
+cd dao-contract
+
 npm install
 ```
 
@@ -110,8 +116,22 @@ npx hardhat test
 npx hardhat run scripts/deploy.ts
 ```
 
+### Frontend
+
 We have provided a frontend to enable you pin files to IPFS and recover the hash for the NFT token URI. This frontend also helps you easily arrange the **milestones** parameter for the smart contract call.
 
 **NOTE** the frontend does not let you make metamask transactions. This is because we expect you to use an admin management tool like [Openzeppelin Defender](https://defender.openzeppelin.com/). The frontend will however, provide you with the necessary parameters to use in the smart contract's grant creation call.
 
-Here is a [sample contract](https://mumbai.polygonscan.com/address/0x3Cd3D3E524d366Ffe6e5e7740F5A7162E970BBb6#code) deployed on Mumbai testnet.
+To enter the frontend, you need to make the following commands:
+
+```
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+This will run the frontend on localhost **PORT 5173**.
+
+Here is a sample contract deployed on [Alfajores Network](https://alfajores.celoscan.io/address/0x022fa1f13F01735532881FFfDbb726f73fA9577D#code).
