@@ -20,6 +20,7 @@ import { ethers } from "ethers";
 import { useFormik } from "formik";
 import { create } from "ipfs-http-client";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import * as Yup from "yup";
 import { DAOIPFSModel } from "../types";
 
@@ -43,7 +44,6 @@ const ValidationSchema = Yup.object().shape({
 
 export const CreateProjectView = () => {
   const [projectData, setProjectData] = useState<null | any>(null);
-  const [copied, setCopied] = useState(false);
   const {
     values,
     handleChange,
@@ -62,7 +62,6 @@ export const CreateProjectView = () => {
     },
     validationSchema: ValidationSchema,
     onSubmit: async (model) => {
-      console.log({ model });
       const projectId = "2Ifc0tuPeWAQfMiGkvRdt7ZMaEk";
       const projectSecret = "476cd702f7d1173a081e64dda670c76a";
       const authorization =
@@ -102,19 +101,19 @@ export const CreateProjectView = () => {
           structuresMilestones,
           `ipfs//${path}`,
         ];
-        console.log({ projectData });
         setProjectData(projectData);
       } catch (error) {
         console.log({ error });
       }
     },
   });
+  const navigate = useNavigate();
 
-  console.log({ values, errors });
   return (
     <Container maxW="800px" minH="100%">
       <Flex justifyContent={"center"} alignItems="center" height="100vh">
         <Box>
+          <Button onClick={() => navigate("/")}>View Projects</Button>
           <Heading textAlign="center" mb="40px">
             Provide Project Information to Create One
           </Heading>
