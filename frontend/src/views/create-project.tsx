@@ -40,6 +40,7 @@ const ValidationSchema = Yup.object().shape({
 
 export const CreateProjectView = () => {
   const [projectData, setProjectData] = useState<null | any>(null);
+  const [copied, setCopied] = useState(false);
   const {
     values,
     handleChange,
@@ -165,7 +166,6 @@ export const CreateProjectView = () => {
                   onBlur={handleBlur}
                 />
                 <Button
-                  background="none"
                   style={{ position: "absolute", right: "0%" }}
                   onClick={async () => {
                     const text = await navigator.clipboard.readText();
@@ -264,18 +264,31 @@ export const CreateProjectView = () => {
               </Box>
             ) : null}
 
-            {values.milestones.length && !projectData ? (
+            {values.milestones.length ? (
               <Flex alignItems="center" justifyContent="center">
                 {projectData ? (
                   <Button
                     onClick={() => {
-                      navigator.clipboard.writeText(
-                        JSON.stringify(projectData)
-                      );
+                      navigator.clipboard
+                        .writeText(JSON.stringify(projectData))
+                        .then(() => {
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 3500);
+                        });
                     }}
                     mt="5"
                   >
                     Copy Multisig Transaction Params
+                    {copied ? (
+                      <Text
+                        ml="1"
+                        color="green"
+                        fontWeight="bold"
+                        fontStyle="italic"
+                      >
+                        Copied
+                      </Text>
+                    ) : null}
                   </Button>
                 ) : (
                   <Button flex="1" maxW="15em" mt="40px" type="submit">

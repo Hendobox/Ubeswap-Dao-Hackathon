@@ -3,6 +3,7 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -54,7 +55,9 @@ export const ProjectsTable = function <T extends object>({
           </Tbody>
         </Table>
       ) : (
-        <div className="error">There are no project(s) to display</div>
+        <Text mt="5" fontWeight="bold" textAlign="center" color="crimson">
+          There are no project(s) to display
+        </Text>
       )}
     </TableContainer>
   );
