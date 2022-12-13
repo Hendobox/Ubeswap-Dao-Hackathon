@@ -9,17 +9,17 @@ When the DAO desides to fund a grant/project, the DAO admin will need to carry o
 - When the IPFS hash is generated, the admin needs to create new project in the smart contract, which accepts the **wallet address** of the beneficiary, array of **milestones** which contain the different **timestamps** and **amounts**, and the created **IPFS hash** as given below:
 
 ```
-function setProject(
-    address payable beneficiary,
-    Milestone[] memory milestones,
-    string memory uri)
-
 struct Milestone {
     bool closed;
     bool approved;
     uint256 timestamp;
     uint256 amount;
 }
+
+function setProject(
+    address payable beneficiary,
+    Milestone[] memory milestones,
+    string memory uri)
 ```
 
 | Syntax      | type        | description                                                                 |
@@ -67,8 +67,6 @@ function revokeProject(uint256 id, address payable daoWallet)
 - To see the full information of individual grants, you need to make the following call:
 
 ```
-function getProject(uint256 id) external view returns (Project memory)
-
 struct Project {
     bool hasStarted;
     bool isRevoked;
@@ -77,6 +75,8 @@ struct Project {
     uint256 totalPayout;
     uint256 totalMissout;
 }
+
+function getProject(uint256 id) external view returns (Project memory)
 ```
 
 | Syntax       | type        | description                                                                                                                                                                                     |
@@ -128,6 +128,10 @@ To enter the frontend, you need to make the following commands:
 cd frontend
 
 npm install
+
+or
+
+npm install --legacy-peer-deps
 
 npm run dev
 ```
