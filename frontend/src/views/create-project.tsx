@@ -9,11 +9,14 @@ import {
   Grid,
   Heading,
   Input,
+  ListItem,
+  OrderedList,
   Spinner,
   Text,
 } from "@chakra-ui/react";
 import { Buffer } from "buffer";
-import { parseEther } from "ethers/lib/utils.js";
+import { ethers } from "ethers";
+// import { parseUnits } from "ethers/lib/utils.js";
 import { useFormik } from "formik";
 import { create } from "ipfs-http-client";
 import { useState } from "react";
@@ -90,14 +93,14 @@ export const CreateProjectView = () => {
             closed: false,
             approved: false,
             timestamp: new Date(timestamp).getTime() * 1000,
-            amount: parseEther(amount.toString()),
+            amount: amount,
           }))
           .sort(({ timestamp: tA }, { timestamp: tB }) => (tB > tA ? -1 : 1));
 
         const projectData = [
           values.beneficiaryWalletAddress,
           structuresMilestones,
-          path,
+          `ipfs//${path}`,
         ];
         console.log({ projectData });
         setProjectData(projectData);
@@ -258,43 +261,62 @@ export const CreateProjectView = () => {
                 : null}
             </Flex>
 
-            {projectData?.[2] ? (
-              <Box mt="5">
-                <Text>Agreement Data saved to IPFS: {projectData[2]}</Text>
-              </Box>
+            {projectData ? (
+              <Grid mt="5" gap="2">
+                <Flex alignItems="center" justifyContent="flex-start" gap="2">
+                  <Text fontWeight="bold">Beneficiary Address:</Text>
+                  <Text>{projectData[0]}</Text>
+                </Flex>
+
+                <Flex alignItems="center" justifyContent="flex-start" gap="2">
+                  <Text fontWeight="bold">Token URI:</Text>
+                  <Text>{projectData[2]}</Text>
+                </Flex>
+
+                <Flex
+                  alignItems="flex-start"
+                  justifyContent="flex-start"
+                  gap="2"
+                >
+                  <Text fontWeight="bold">Milestones:</Text>
+                  <OrderedList style={{ listStyle: "initial" }}>
+                    {projectData[1].map(
+                      ({ amount, timestamp }: any, index: number) => (
+                        <ListItem
+                          style={{
+                            display: "flex",
+                            listStyle: "initial",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                          key={index}
+                        >
+                          <Flex>
+                            <Text fontWeight="bold">Amount: </Text>
+                            <Text>
+                              {ethers.utils
+                                .parseUnits(amount.toString(), "ether")
+                                .toString()}
+                            </Text>
+                          </Flex>
+
+                          <Flex>
+                            <Text fontWeight="bold">Timestamp: </Text>
+                            <Text>{timestamp}</Text>
+                          </Flex>
+                        </ListItem>
+                      )
+                    )}
+                  </OrderedList>
+                </Flex>
+              </Grid>
             ) : null}
 
             {values.milestones.length ? (
-              <Flex alignItems="center" justifyContent="center">
-                {projectData ? (
-                  <Button
-                    onClick={() => {
-                      navigator.clipboard
-                        .writeText(JSON.stringify(projectData))
-                        .then(() => {
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 3500);
-                        });
-                    }}
-                    mt="5"
-                  >
-                    Copy Multisig Transaction Params
-                    {copied ? (
-                      <Text
-                        ml="1"
-                        color="green"
-                        fontWeight="bold"
-                        fontStyle="italic"
-                      >
-                        Copied
-                      </Text>
-                    ) : null}
-                  </Button>
-                ) : (
-                  <Button flex="1" maxW="15em" mt="40px" type="submit">
-                    {isSubmitting ? <Spinner /> : "Pin to IPFS"}
-                  </Button>
-                )}
+              <Flex mt="6" alignItems="center" justifyContent="center">
+                <Button flex="1" maxW="15em" mt="40px" type="submit">
+                  {isSubmitting ? <Spinner /> : "Pin to IPFS"}
+                </Button>
               </Flex>
             ) : null}
           </form>
