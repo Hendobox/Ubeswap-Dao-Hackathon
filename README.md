@@ -1,6 +1,6 @@
 # Ubeswap-Dao-Hackathon
 
-This dApp will fulfill milestone payments for grants funded by the Ubeswap DAO. It is properly optimised to save gas upon execution. It is recommended that you use a tool like [Openzeppelin Defender](https://defender.openzeppelin.com/) to make multisig calls to this contract as multisig functionalities weren't added to the contract with the assumption that a multisig wallet already exists for the project.
+This D'app will fulfill milestone payments for grants funded by the Ubeswap DAO. It is properly optimised to save gas upon execution. It is recommended that you use a tool like [Openzeppelin Defender](https://defender.openzeppelin.com/) to make multisig calls to this contract as multisig functionalities weren't added to the contract with the assumption that a multisig wallet already exists for the project.
 
 When the DAO desides to fund a grant/project, the DAO admin will need to carry out the following functionalities:
 
@@ -64,7 +64,7 @@ function revokeProject(uint256 id, address payable daoWallet)
 | id        | uint256 | the ID of the grant/project to be revoked |
 | daoWallet | address | wallet address to receive grant funds     |
 
-- To see the full information of individual grants, you need to make the folloing call:
+- To see the full information of individual grants, you need to make the following call:
 
 ```
 function getProject(uint256 id) external view returns (Project memory)
@@ -91,7 +91,7 @@ struct Project {
 
 ## Installation
 
-This project comes with a contract, a test for that contract, a and deployment script. You need to install the follwoing:
+This project comes with a contract, a test for that contract, a and deployment script. You need to install the following:
 
 - Solidity
 - Hardhat
@@ -110,7 +110,7 @@ npx hardhat test
 npx hardhat run scripts/deploy.ts
 ```
 
-We have provided a frontend to enable you pin files to IPFS and recover the hash for the NFT token URI. This frontend also helps yoy easily arrange the **milestones** parameter for the smart contract call.
+We have provided a frontend to enable you pin files to IPFS and recover the hash for the NFT token URI. This frontend also helps you easily arrange the **milestones** parameter for the smart contract call.
 
 **NOTE** the frontend does not let you make metamask transactions. This is because we expect you to use an admin management tool like [Openzeppelin Defender](https://defender.openzeppelin.com/). The frontend will however, provide you with the necessary parameters to use in the smart contract's grant creation call.
 
