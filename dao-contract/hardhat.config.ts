@@ -9,11 +9,6 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   networks: {
-    mumbai: {
-      url: process.env.MUMBAI_URL,
-      accounts: [process.env.PRIVATE_KEY || ""],
-    },
-
     alfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [process.env.PRIVATE_KEY || ""]
