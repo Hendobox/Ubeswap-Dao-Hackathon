@@ -71,30 +71,6 @@ export const ViewProjects = () => {
     chain,
   });
 
-  // const saveagreementToIPFS = async (model: DAOIPFSModel) => {
-  //   const projectId = "2Ifc0tuPeWAQfMiGkvRdt7ZMaEk";
-  //   const projectSecret = "476cd702f7d1173a081e64dda670c76a";
-  //   const authorization =
-  //     "Basic " +
-  //     Buffer.from(projectId + ":" + projectSecret).toString("base64");
-
-  //   const client = create({
-  //     host: "ipfs.infura.io",
-  //     port: 5001,
-  //     protocol: "https",
-  //     headers: {
-  //       authorization,
-  //     },
-  //   });
-
-  //   try {
-  //     const { path } = await client.add(JSON.stringify(model));
-  //     console.log({ path });
-  //   } catch (error) {
-  //     console.log({ error });
-  //   }
-  // };
-
   return (
     <Box minH="100vh" p="4">
       <Flex alignItems="center" justifyContent="space-between">
