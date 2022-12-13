@@ -133,7 +133,7 @@ export const ViewProjects = () => {
                         [closed, approved, timestamp, amount]: [
                           boolean,
                           boolean,
-                          number,
+                          BigNumber,
                           BigNumber
                         ],
                         index: number
@@ -171,7 +171,7 @@ export const ViewProjects = () => {
                             <Text fontWeight="bold">Timestamp:&nbsp;</Text>
                             <Text>
                               {new Date(
-                                BigNumber.from(timestamp * 1000).toNumber()
+                                BigNumber.from(timestamp).toNumber() / 1000
                               ).toUTCString()}
                             </Text>
                           </Flex>
