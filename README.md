@@ -1,7 +1,5 @@
 # Ubeswap-Dao-Hackathon
 
-[EXPLAINER VIDEO](https://www.loom.com/share/54b50b13ab5544aca80299860641b42a).
-
 This DApp will fulfill milestone payments for grants funded by the Ubeswap DAO. It is properly optimised to save gas upon execution. It is recommended that you use a tool like [Openzeppelin Defender](https://defender.openzeppelin.com/) to make multisig calls to this contract as multisig functionalities weren't added to the contract with the assumption that a multisig wallet already exists for the project.
 
 When the DAO desides to fund a grant/project, the DAO admin will need to carry out the following functionalities:
