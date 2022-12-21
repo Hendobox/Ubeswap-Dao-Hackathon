@@ -313,8 +313,14 @@ export const CreateProjectView = () => {
 
             {values.milestones.length ? (
               <Flex mt="6" alignItems="center" justifyContent="center">
-                <Button flex="1" maxW="15em" mt="40px" type="submit">
-                  {isSubmitting ? <Spinner /> : "Pin to IPFS"}
+                <Button
+                  isLoading={isSubmitting}
+                  flex="1"
+                  maxW="15em"
+                  mt="40px"
+                  type="submit"
+                >
+                  Pin to IPFS
                 </Button>
               </Flex>
             ) : null}

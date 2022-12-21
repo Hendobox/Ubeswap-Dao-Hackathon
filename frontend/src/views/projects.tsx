@@ -29,6 +29,8 @@ import { Project } from "../utils/projects";
 import { CONTRACT_ADDRESS } from "../utils/constants";
 import { BigNumber, ethers } from "ethers";
 import { formatEther } from "ethers/lib/utils.js";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { ContributorAgreementForm } from "./agreement-doc";
 
 export const ViewProjects = () => {
   const navigate = useNavigate();
@@ -179,6 +181,37 @@ export const ViewProjects = () => {
                       )
                     )}
                   </OrderedList>
+
+                  <Box mb="5" mt="6" textAlign="center">
+                    <PDFDownloadLink
+                      document={
+                        <ContributorAgreementForm
+                          dao={{
+                            milestoneContract:
+                              "0x0000000000000000000000000000000000000000",
+                            discord: "https://discord.com/invite/VHUZjJ8s",
+                            email: "https://discord.com/invite/VHUZjJ8s",
+                          }}
+                          email=""
+                          walletAddress=""
+                          beneficiaryName=""
+                          projectName=""
+                          date={new Date()}
+                        />
+                      }
+                      fileName={`project-${currentID + 1}.pdf`}
+                    >
+                      {({ loading }) =>
+                        loading ? (
+                          "Loading document..."
+                        ) : (
+                          <Button colorScheme="teal" variant="solid">
+                            Download Agreement Document
+                          </Button>
+                        )
+                      }
+                    </PDFDownloadLink>
+                  </Box>
                 </Box>
               </Grid>
             </ModalBody>
